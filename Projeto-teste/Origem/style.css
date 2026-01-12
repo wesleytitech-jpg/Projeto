@@ -1,0 +1,141 @@
+/* --- Identidade Visual Itaú --- */
+:root {
+    --itau-orange: #EC7000;    /* Laranja Itaú */
+    --itau-blue: #003399;      /* Azul Marinho */
+    --bg-light: #F7F8F9;       /* Fundo acinzentado */
+    --text-dark: #333333;      /* Texto principal */
+    --text-gray: #666666;      /* Texto secundário */
+    --white: #FFFFFF;
+    --border: #E5E5E5;
+}
+
+body {
+    font-family: 'Itau Text', 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* --- Header Robusto --- */
+header {
+    background-color: var(--itau-blue);
+    color: var(--white);
+    padding: 60px 20px;
+    text-align: center;
+    border-bottom: 6px solid var(--itau-orange);
+}
+
+header h1 { 
+    margin: 0; 
+    font-size: 2.2rem; 
+    font-weight: 700;
+}
+
+header p { 
+    margin-top: 10px; 
+    font-size: 1.1rem; 
+    opacity: 0.9; 
+}
+
+/* --- Container --- */
+.manual-container, .topic-list {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.back-nav { margin-bottom: 25px; }
+.back-nav a { 
+    color: var(--itau-blue); 
+    text-decoration: none; 
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* --- Busca Estilo Clean --- */
+.search-wrapper { margin-bottom: 35px; }
+.local-search {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 4px; /* Cantos menos arredondados transmitem seriedade */
+    border: 1px solid var(--border);
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.local-search:focus { border-color: var(--itau-orange); }
+
+/* --- Cards e Lista --- */
+.grid-topicos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.item-manual, .topic-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    transition: all 0.2s ease;
+}
+
+/* Efeito de destaque discreto */
+.item-manual:hover, .topic-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-color: var(--itau-orange);
+}
+
+.item-manual h2 { 
+    margin: 0 0 12px; 
+    font-size: 1.25rem; 
+    color: var(--itau-blue); 
+}
+
+.item-manual p { 
+    color: var(--text-gray); 
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+/* --- Topic Item (Lista) --- */
+.topic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--itau-blue);
+}
+
+.topic-item a { 
+    text-decoration: none; 
+    color: var(--text-dark); 
+    font-weight: 600; 
+}
+
+/* --- Elementos de UI --- */
+.badge {
+    background: #F2F4F7;
+    color: var(--itau-blue);
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.btn-manual {
+    display: inline-block;
+    background-color: var(--itau-orange);
+    color: var(--white);
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-manual:hover {
+    background-color: #D66500;
+}
