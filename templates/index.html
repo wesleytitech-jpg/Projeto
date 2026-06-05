@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Network Sentinel — Consulta de Hosts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+<!-- ── TOPNAV ─────────────────────────────────────────── -->
+<nav class="topnav">
+  <a class="topnav-logo" href="#">
+    <div class="topnav-logo-icon">NS</div>
+    <span>Network Sentinel</span>
+  </a>
+  <div class="topnav-divider"></div>
+  <span class="topnav-title">Monitoramento de Ativos · Consulta de Hosts</span>
+  <div class="topnav-right">
+    <span class="topnav-badge">● LIVE</span>
+    <!-- ── DARK MODE TOGGLE ── -->
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Alternar modo claro/escuro" aria-label="Alternar tema">
+      <span class="theme-icon theme-icon-light">☀️</span>
+      <span class="theme-icon theme-icon-dark">🌙</span>
+    </button>
+    <div class="topnav-avatar">AD</div>
+  </div>
+</nav>
+
+<!-- ── LAYOUT ──────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Navegação</div>
+
+    <button class="nav-item" id="nav-cadastro" onclick="switchTab('cadastro')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="2" width="12" height="12" rx="2"/>
+        <line x1="8" y1="5" x2="8" y2="11"/>
+        <line x1="5" y1="8" x2="11" y2="8"/>
+      </svg>
+      ➕ Cadastrar Usuário
+    </button>
+
+    <button class="nav-item active" id="nav-hosts" onclick="switchTab('hosts')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="6.5" cy="6.5" r="4"/>
+        <line x1="9.5" y1="9.5" x2="13.5" y2="13.5"/>
+      </svg>
+      🖥️ Hosts
+    </button>
+
+    <button class="nav-item" id="nav-historico" onclick="switchTab('historico')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="6"/>
+        <polyline points="8 4 8 8 11 10"/>
+      </svg>
+      📜 Histórico
+    </button>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1>Consulta de Hosts</h1>
+        <div class="breadcrumb">
+          <span>Home</span>
+          <span>›</span>
+          <span>Network Sentinel</span>
+          <span>›</span>
+          <span id="breadcrumbCurrent">Hosts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-area">
+
+      <!-- ── TAB: CADASTRO ──────────────────────────────── -->
+      <div id="tab-cadastro" class="tab-panel">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-dot"></div>
+              Informações do Usuário
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="field field-full">
+                <label for="nome">Nome Completo <span class="req">*</span></label>
+                <input type="text" id="nome" placeholder="Ex: João da Silva"
+                       autocomplete="off"/>
+              </div>
+              <div class="field">
+                <label for="racf">RACF <span class="req">*</span></label>
+                <input type="text" id="racf" placeholder="Ex: JSILVA01"
+                       maxlength="7" autocomplete="off"/>
+              </div>
+              <div class="field">
+                <label for="funcional">Funcional <span class="req">*</span></label>
+                <input type="text" id="funcional" placeholder="Ex: 123456789"
+                       maxlength="9" inputmode="numeric"
+                       oninput="this.value=this.value.replace(/\D/g,'')"
+                       autocomplete="off"/>
+              </div>
+              <div class="field field-full">
+                <label for="hostname">Hostname <span class="req">*</span></label>
+                <input type="text" id="hostname" placeholder="Ex: srv-prod-01"
+                       autocomplete="off"/>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-green" onclick="cadastrar(event)">✓ Cadastrar</button>
+              <button class="btn btn-outline" onclick="limparForm()">Limpar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: HOSTS ─────────────────────────────────── -->
+      <div id="tab-hosts" class="tab-panel active">
+        <div class="panel" style="margin-bottom:20px">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-dot"></div>
+              Pesquisar por Host
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="search-bar">
+              <div class="search-input-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="searchHostInput"
+                       placeholder="Pesquisar por Nome, RACF ou Hostname..."
+                       onkeydown="if(event.key==='Enter') buscarHosts()"/>
+              </div>
+              <button class="btn-search-action" onclick="buscarHosts()">Pesquisar</button>
+            </div>
+          </div>
+        </div>
+        <div id="hostsResultsArea"></div>
+      </div>
+
+      <!-- ── TAB: HISTÓRICO ─────────────────────────────── -->
+      <div id="tab-historico" class="tab-panel">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-dot"></div>
+              Últimos 3 Hosts Consultados (Ping)
+            </div>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="historico-table">
+              <thead>
+                <tr>
+                  <th>Data/Hora</th>
+                  <th>Usuário</th>
+                  <th>Hostname</th>
+                  <th>IP Encontrado</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historicoTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center;color:var(--muted)">
+                    Nenhum registro encontrado
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-area -->
+  </div><!-- /content -->
+</div><!-- /layout -->
+
+<!-- ── MODAL: EDITAR ────────────────────────────────────── -->
+<div class="modal-overlay" id="editModal" role="dialog" aria-modal="true"
+     aria-labelledby="editModalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-title" id="editModalTitle">✎ Editar Registro</div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editRacfOriginal"/>
+      <div class="field">
+        <label for="editNome">Nome Completo</label>
+        <input type="text" id="editNome" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label for="editRacf">RACF</label>
+        <input type="text" id="editRacf" maxlength="7" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label for="editFuncional">Funcional</label>
+        <input type="text" id="editFuncional" maxlength="9" inputmode="numeric"
+               oninput="this.value=this.value.replace(/\D/g,'')" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label for="editHostname">Hostname</label>
+        <input type="text" id="editHostname" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarEdicao(event)">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: REINICIAR ─────────────────────────────────── -->
+<div class="modal-overlay" id="rebootModal" role="dialog" aria-modal="true"
+     aria-labelledby="rebootModalTitle">
+  <div class="modal modal-sm">
+    <div class="modal-head modal-head-danger">
+      <div class="modal-head-title" id="rebootModalTitle">⚡ Gerar Comando de Reinicialização</div>
+      <button class="modal-close" onclick="closeRebootModal()" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Estado inicial: confirmação -->
+      <div id="rebootConfirmArea">
+        <p class="reboot-warning">
+          Gerar comando de reinicialização para:<br/>
+          <strong id="rebootHostnameLabel"></strong>
+        </p>
+        <p class="reboot-warning-sub">
+          O sistema irá resolver o IP do equipamento e montar o comando
+          de reinicialização pronto para copiar e executar manualmente.
+        </p>
+      </div>
+
+      <!-- Estado de carregamento / resultado -->
+      <div id="rebootStatusArea" style="display:none">
+        <div class="reboot-steps">
+          <div class="reboot-step" id="step-verificando">
+            <span class="step-icon">⏳</span>
+            <span class="step-label">Resolvendo IP do equipamento...</span>
+          </div>
+          <div class="reboot-step muted" id="step-online">
+            <span class="step-icon">🟢</span>
+            <span class="step-label">IP resolvido com sucesso</span>
+          </div>
+          <div class="reboot-step muted" id="step-reiniciando">
+            <span class="step-icon">📋</span>
+            <span class="step-label">Comando gerado</span>
+          </div>
+          <div class="reboot-step muted" id="step-falha" style="display:none">
+            <span class="step-icon">⚠️</span>
+            <span class="step-label">IP não resolvido — usando hostname</span>
+          </div>
+        </div>
+
+        <!-- Bloco do comando gerado -->
+        <div id="rebootCommandArea" style="display:none">
+          <div class="reboot-command-label">Comando gerado:</div>
+          <div class="reboot-command-wrap">
+            <textarea id="rebootCommandText" class="reboot-command-field"
+                      readonly rows="3"
+                      onclick="this.select()"></textarea>
+            <button class="btn btn-copy" id="btnCopyCommand" onclick="copiarComando()">
+              📋 Copiar Código
+            </button>
+          </div>
+          <div id="rebootCopyFeedback" class="reboot-copy-feedback" style="display:none">
+            ✅ Comando copiado para a área de transferência!
+          </div>
+          <div id="rebootDetail" class="reboot-detail" style="display:none"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer" id="rebootFooter">
+      <button class="btn btn-outline" onclick="closeRebootModal()">Cancelar</button>
+      <button class="btn btn-reboot" id="btnConfirmReboot" onclick="confirmarReiniciar()">⚡ Gerar Comando</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ─────────────────────────────────────────────── -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ── SCRIPTS ───────────────────────────────────────────── -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
